@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:project/Data/models/network_response.dart';
+import 'package:project/Data/models/task_list_model.dart';
+import 'package:project/Data/models/task_model.dart';
+import 'package:project/Data/services/network_caller.dart';
 import 'package:project/ui/screens/add_new_task_screen.dart';
+import 'package:project/ui/screens/completed_task_screen.dart';
 import 'package:project/ui/utils/app_colors.dart';
 import 'package:project/ui/widgets/TaskCard.dart';
+import 'package:project/ui/widgets/centered_circular_progress_indicator.dart';
+import 'package:project/ui/widgets/snack_bar_message.dart';
 import 'package:project/ui/widgets/task_summery_card.dart';
+
+import '../../Data/utils/urls.dart';
 
 class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({super.key});
@@ -12,31 +21,49 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
+  bool _getNewTaskInProgress = false;
+  List<TaskModel> _newTaskList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getNewTaskList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          _buildSummerySection(),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return const TaskCard();
-                },
-                separatorBuilder: (context, index) {
-                  return const SizedBox(height: 8);
-                },
-                itemCount: 10,
+    return RefreshIndicator(
+      onRefresh: () async {
+        _getNewTaskList();
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            _buildSummerySection(),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Visibility(
+                  visible: !_getNewTaskInProgress,
+                  replacement: const CenteredCircularProgressIndicator(),
+                  child: ListView.separated(
+                    itemBuilder: (context, index) {
+                      return TaskCard(taskModel: _newTaskList[index]);
+                    },
+                    separatorBuilder: (context, index) {
+                      return const SizedBox(height: 8);
+                    },
+                    itemCount: _newTaskList.length,
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onTapAddFloatingActionB,
-        child: Icon(Icons.add),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _onTapAddFloatingActionB,
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }
@@ -48,8 +75,8 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            SummeryCard(title: 'New', count: 08),
-            SummeryCard(title: 'Completed', count: 3),
+            SummeryCard(title: 'New', count: _newTaskList.length),
+            SummeryCard(title: 'Completed', count: 4),
             SummeryCard(title: 'Cancelled', count: 5),
             SummeryCard(title: 'Progress', count: 5),
           ],
@@ -58,10 +85,32 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     );
   }
 
-  void _onTapAddFloatingActionB() {
-    Navigator.push(
+  Future<void> _onTapAddFloatingActionB() async {
+    final bool? shouldRefresh = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const AddNewTaskScreen()),
     );
+    if (shouldRefresh == true) {
+      _getNewTaskList();
+    }
+  }
+
+  Future<void> _getNewTaskList() async {
+    _newTaskList.clear();
+    _getNewTaskInProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkCaller.getRequest(
+      url: Urls.newTaskList,
+    );
+    _getNewTaskInProgress = false;
+    setState(() {});
+    if (response.isSuccess) {
+      final TaskListModel taskListModel = TaskListModel.fromJson(
+        response.resposeData,
+      );
+      _newTaskList = taskListModel.taskList ?? [];
+    } else {
+      showSnackBarMessage(context, response.errorMessage, true);
+    }
   }
 }

@@ -17,7 +17,6 @@ class ProgressTaskScreen extends StatefulWidget {
 class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
   bool _inProgress = false;
   List<TaskModel> _progressTaskList = [];
-  static int length = 0;
   @override
   void initState() {
     super.initState();
@@ -30,7 +29,10 @@ class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: ListView.separated(
         itemBuilder: (context, index) {
-          return TaskCard(taskModel: _progressTaskList[index]);
+          return TaskCard(
+            taskModel: _progressTaskList[index],
+            onRefreshList: _getProgressTask,
+          );
         },
         separatorBuilder: (context, index) {
           return const SizedBox(height: 8);
@@ -44,7 +46,7 @@ class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
     _progressTaskList.clear();
     _inProgress = true;
     setState(() {});
-    final NetworkResponse response = await NetworkCaller.postRequest(
+    final NetworkResponse response = await NetworkCaller.getRequest(
       url: Urls.progressTaskList,
     );
     _inProgress = false;
@@ -54,7 +56,6 @@ class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
         response.resposeData,
       );
       _progressTaskList = taskListModel.taskList ?? [];
-      length = _progressTaskList.length;
     } else {
       showSnackBarMessage(context, response.errorMessage, true);
     }

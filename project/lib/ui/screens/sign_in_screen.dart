@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:project/Data/models/login_model.dart';
 import 'package:project/Data/models/network_response.dart';
 import 'package:project/Data/services/network_caller.dart';
 import 'package:project/Data/utils/urls.dart';
@@ -158,7 +159,9 @@ class _SignInScreenState extends State<SignInScreen> {
     _inProgress = false;
     setState(() {});
     if (response.isSuccess) {
-      await AuthController.saveAccessToken(response.resposeData['token']);
+      LoginModel loginModel = await LoginModel.fromJson(response.resposeData);
+      await AuthController.saveAccessToken(loginModel.token!);
+      await AuthController.saveUserData(loginModel.data!);
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const MainBottomNavBarScreen()),

@@ -5,14 +5,14 @@ import 'package:project/ui/screens/sign_in_screen.dart';
 import 'package:project/ui/utils/app_colors.dart';
 
 class TaskManagerAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const TaskManagerAppBar({super.key, this.isProfileScreenOpene = false});
+  const TaskManagerAppBar({super.key, this.isProfileScreenOpen = false});
 
-  final bool isProfileScreenOpene;
+  final bool isProfileScreenOpen;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (isProfileScreenOpene) {
+        if (isProfileScreenOpen) {
           return;
         }
         Navigator.push(
@@ -32,7 +32,7 @@ class TaskManagerAppBar extends StatelessWidget implements PreferredSizeWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Mahabub Jamil',
+                    AuthController.userData?.fullName ?? '',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -40,7 +40,7 @@ class TaskManagerAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   ),
                   Text(
-                    'mahabub@gmail.com',
+                    AuthController.userData?.email ?? '',
                     style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class SummeryCard extends StatelessWidget {
-  const SummeryCard({super.key, required this.title, required this.count});
+class TaskSummaryCard extends StatelessWidget {
+  const TaskSummaryCard({super.key, required this.title, required this.count});
 
   final String title;
   final int count;

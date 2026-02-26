@@ -17,7 +17,6 @@ class CancelledTaskScreen extends StatefulWidget {
 class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
   bool _inProgress = false;
   List<TaskModel> _cancelledTaskList = [];
-  static int length = 0;
   @override
   void initState() {
     super.initState();
@@ -30,7 +29,10 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: ListView.separated(
         itemBuilder: (context, index) {
-          return TaskCard(taskModel: _cancelledTaskList[index]);
+          return TaskCard(
+            taskModel: _cancelledTaskList[index],
+            onRefreshList: _getCancelledTask,
+          );
         },
         separatorBuilder: (context, index) {
           return const SizedBox(height: 8);
@@ -44,7 +46,7 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
     _cancelledTaskList.clear();
     _inProgress = true;
     setState(() {});
-    final NetworkResponse response = await NetworkCaller.postRequest(
+    final NetworkResponse response = await NetworkCaller.getRequest(
       url: Urls.cancelledTaskList,
     );
     _inProgress = false;
@@ -54,7 +56,6 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
         response.resposeData,
       );
       _cancelledTaskList = taskListModel.taskList ?? [];
-      length = _cancelledTaskList.length;
     } else {
       showSnackBarMessage(context, response.errorMessage, true);
     }

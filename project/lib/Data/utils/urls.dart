@@ -4,6 +4,10 @@ class Urls {
   static const String login = '$_baseUrl/login';
   static const String createTask = '$_baseUrl/createTask';
   static const String RecoverResetPass = '$_baseUrl/RecoverResetPass';
+  static String RecoverVerifyEmail(String email) =>
+      '$_baseUrl/RecoverVerifyEmail/$email';
+  static String RecoverVerifyOTP(String email, String otp) =>
+      '$_baseUrl/RecoverVerifyOTP/$email/$otp';
   static const String newTaskList = '$_baseUrl/listTaskByStatus/New';
   static const String completedTaskList =
       '$_baseUrl/listTaskByStatus/Completed';

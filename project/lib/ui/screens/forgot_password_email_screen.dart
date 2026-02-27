@@ -7,6 +7,7 @@ import 'package:project/ui/screens/forgot_password_pin_verify_screen.dart';
 import 'package:project/ui/screens/sign_in_screen.dart';
 import 'package:project/ui/utils/app_colors.dart';
 import 'package:project/ui/widgets/screen_background.dart';
+import 'package:project/ui/widgets/snack_bar_message.dart';
 
 class ForgotPasswordEmailScreen extends StatefulWidget {
   const ForgotPasswordEmailScreen({super.key});
@@ -76,7 +77,13 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: _onTapNextButton,
-            child: const Icon(Icons.arrow_circle_right_outlined),
+            child: _inProgress
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(color: Colors.white),
+                  )
+                : const Icon(Icons.arrow_circle_right_outlined),
           ),
         ],
       ),
@@ -113,27 +120,31 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
 
   void _onTapNextButton() {
     if (_formKey.currentState!.validate()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const ForgotPasswordPinVerifyScreen(),
-        ),
-      );
+      _verifyEmail(_emailTEController.text.trim());
     }
   }
 
-  Future<void> _otpPage() async {
+  Future<void> _verifyEmail(String email) async {
     _inProgress = true;
     setState(() {});
-    Map<String, dynamic> requestBody = {
-      "email": _emailTEController.text.trim(),
-      "OTP": "",
-      "password": "",
-    };
-    NetworkResponse response = await NetworkCaller.postRequest(
-      url: Urls.RecoverResetPass,
-      body: requestBody,
+    NetworkResponse response = await NetworkCaller.getRequest(
+      url: Urls.RecoverVerifyEmail(email),
     );
+    _inProgress = false;
+    setState(() {});
+    if (response.isSuccess) {
+      showSnackBarMessage(context, "6 digit pin will be sent soon");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ForgotPasswordPinVerifyScreen(
+            email: _emailTEController.text.trim(),
+          ),
+        ),
+      );
+    } else {
+      showSnackBarMessage(context, response.errorMessage, true);
+    }
   }
 
   void _onTapGoToSignIn() {

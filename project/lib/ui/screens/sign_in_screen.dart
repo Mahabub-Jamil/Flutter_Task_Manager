@@ -1,10 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:project/Data/models/login_model.dart';
-import 'package:project/Data/models/network_response.dart';
-import 'package:project/Data/services/network_caller.dart';
-import 'package:project/Data/utils/urls.dart';
-import 'package:project/ui/controllers/auth_controller.dart';
+import 'package:get/get.dart';
+import 'package:project/ui/controllers/sign_in_controller.dart';
 import 'package:project/ui/screens/forgot_password_email_screen.dart';
 import 'package:project/ui/screens/main__bottom_nav_bar_screen.dart';
 import 'package:project/ui/screens/sign_up_screen.dart';
@@ -24,7 +21,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
-  bool _inProgress = false;
+  final SignInController signInController = Get.find<SignInController>();
 
   @override
   Widget build(BuildContext context) {
@@ -91,13 +88,18 @@ class _SignInScreenState extends State<SignInScreen> {
             decoration: InputDecoration(hintText: 'password'),
           ),
           const SizedBox(height: 24),
-          Visibility(
-            visible: !_inProgress,
-            replacement: CenteredCircularProgressIndicator(),
-            child: ElevatedButton(
-              onPressed: _onTapNextButton,
-              child: const Icon(Icons.arrow_circle_right_outlined),
-            ),
+          GetBuilder(
+            init: SignInController(),
+            builder: (controller) {
+              return Visibility(
+                visible: !controller.inprogress,
+                replacement: CenteredCircularProgressIndicator(),
+                child: ElevatedButton(
+                  onPressed: _onTapNextButton,
+                  child: const Icon(Icons.arrow_circle_right_outlined),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -146,29 +148,14 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _signIn() async {
-    _inProgress = true;
-    setState(() {});
-    Map<String, dynamic> requestBody = {
-      "email": _emailTEController.text.trim(),
-      "password": _passwordTEController.text,
-    };
-    final NetworkResponse response = await NetworkCaller.postRequest(
-      url: Urls.login,
-      body: requestBody,
+    final bool result = await signInController.signIn(
+      _emailTEController.text.trim(),
+      _passwordTEController.text,
     );
-    _inProgress = false;
-    setState(() {});
-    if (response.isSuccess) {
-      LoginModel loginModel = await LoginModel.fromJson(response.resposeData);
-      await AuthController.saveAccessToken(loginModel.token!);
-      await AuthController.saveUserData(loginModel.data!);
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const MainBottomNavBarScreen()),
-        (value) => false,
-      );
+    if (result) {
+      Get.offAllNamed(MainBottomNavBarScreen.name);
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      showSnackBarMessage(context, signInController.errorMessage!, true);
     }
   }
 

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:project/controller_binder.dart';
+import 'package:project/ui/screens/main__bottom_nav_bar_screen.dart';
 import 'package:project/ui/screens/splash_screen.dart';
 import 'package:project/ui/utils/app_colors.dart';
 
@@ -9,7 +12,7 @@ class TaskManagerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       navigatorKey: TaskManagerApp.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -18,7 +21,13 @@ class TaskManagerApp extends StatelessWidget {
         inputDecorationTheme: _inputDecorationTheme(),
         elevatedButtonTheme: _elevatedButtonThemeData(),
       ),
-      home: const SplashScreen(),
+      initialBinding: ControllerBinder(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SplashScreen(),
+        MainBottomNavBarScreen.name: (context) =>
+            const MainBottomNavBarScreen(),
+      },
     );
   }
 

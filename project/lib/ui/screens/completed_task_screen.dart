@@ -10,7 +10,7 @@ import 'package:project/ui/widgets/snack_bar_message.dart';
 
 class CompletedTaskScreen extends StatefulWidget {
   const CompletedTaskScreen({super.key});
-
+  static const String name = '/completedTaskScreen';
   @override
   State<CompletedTaskScreen> createState() => _CompletedTaskScreenState();
 }

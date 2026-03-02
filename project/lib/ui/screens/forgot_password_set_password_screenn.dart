@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project/Data/models/network_response.dart';
 import 'package:project/Data/services/network_caller.dart';
 import 'package:project/Data/utils/urls.dart';
@@ -10,13 +11,8 @@ import 'package:project/ui/widgets/screen_background.dart';
 import 'package:project/ui/widgets/snack_bar_message.dart';
 
 class ForgotPasswordSetPasswordScreen extends StatefulWidget {
-  const ForgotPasswordSetPasswordScreen({
-    super.key,
-    required this.email,
-    required this.otp,
-  });
-  final String email;
-  final String otp;
+  const ForgotPasswordSetPasswordScreen({super.key});
+  static const String name = '/forgotPasswordSetPasswordScreen';
   @override
   State<ForgotPasswordSetPasswordScreen> createState() =>
       _ForgotPasswordSetPasswordScreenState();
@@ -24,6 +20,8 @@ class ForgotPasswordSetPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordSetPasswordScreenState
     extends State<ForgotPasswordSetPasswordScreen> {
+  String get email => Get.arguments['email'];
+  String get otp => Get.arguments['otp'];
   bool _inProgress = false;
   final TextEditingController _passwordTEController = TextEditingController();
   final TextEditingController _confirmPasswordTEController =
@@ -151,8 +149,8 @@ class _ForgotPasswordSetPasswordScreenState
     _inProgress = true;
     setState(() {});
     Map<String, dynamic> requestBody = {
-      "email": widget.email,
-      "OTP": widget.otp,
+      "email": email,
+      "OTP": otp,
       "password": _passwordTEController.text,
     };
     final NetworkResponse response = await NetworkCaller.postRequest(

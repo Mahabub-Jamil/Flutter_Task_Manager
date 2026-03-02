@@ -12,7 +12,7 @@ import 'package:project/ui/widgets/snack_bar_message.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
-
+  static const String name = '/signInScreen';
   @override
   State<SignInScreen> createState() => _SignInScreenState();
 }
@@ -92,7 +92,7 @@ class _SignInScreenState extends State<SignInScreen> {
             init: SignInController(),
             builder: (controller) {
               return Visibility(
-                visible: !controller.inprogress,
+                visible: !controller.inProgress,
                 replacement: CenteredCircularProgressIndicator(),
                 child: ElevatedButton(
                   onPressed: _onTapNextButton,

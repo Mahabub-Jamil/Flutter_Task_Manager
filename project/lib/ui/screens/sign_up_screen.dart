@@ -1,8 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:project/Data/models/network_response.dart';
-import 'package:project/Data/services/network_caller.dart';
-import 'package:project/Data/utils/urls.dart';
+import 'package:get/get.dart';
+import 'package:project/ui/controllers/sign_up_controller.dart';
 import 'package:project/ui/screens/sign_in_screen.dart';
 import 'package:project/ui/utils/app_colors.dart';
 import 'package:project/ui/widgets/centered_circular_progress_indicator.dart';
@@ -11,19 +10,19 @@ import 'package:project/ui/widgets/snack_bar_message.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
-
+  static const String name = '/signUpScreen';
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final SignUpController signUpController = Get.find<SignUpController>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailTEController = TextEditingController();
   final TextEditingController _firstNameTEController = TextEditingController();
   final TextEditingController _lastNameTEController = TextEditingController();
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
-  bool _inProgress = false;
   bool _submitted = false;
 
   @override
@@ -134,13 +133,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
             decoration: InputDecoration(hintText: 'password'),
           ),
           const SizedBox(height: 24),
-          Visibility(
-            visible: !_inProgress,
-            replacement: CenteredCircularProgressIndicator(),
-            child: ElevatedButton(
-              onPressed: _onTapNextButton,
-              child: const Icon(Icons.arrow_circle_right_outlined),
-            ),
+          GetBuilder<SignUpController>(
+            builder: (controller) {
+              return Visibility(
+                visible: !controller.inProgress,
+                replacement: CenteredCircularProgressIndicator(),
+                child: ElevatedButton(
+                  onPressed: _onTapNextButton,
+                  child: const Icon(Icons.arrow_circle_right_outlined),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -179,37 +182,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (_formKey.currentState!.validate()) {
       _signUp();
     } else {
-      setState(() {
-        _submitted = true;
-      });
+      signUpController.setSubmitted(true);
     }
   }
 
   Future<void> _signUp() async {
-    _inProgress = true;
-    setState(() {});
-    Map<String, dynamic> requestBody = {
-      "email": _emailTEController.text.trim(),
-      "firstName": _firstNameTEController.text.trim(),
-      "lastName": _lastNameTEController.text.trim(),
-      "mobile": _mobileTEController.text.trim(),
-      "password": _passwordTEController.text,
-      "photo": "",
-    };
-    NetworkResponse response = await NetworkCaller.postRequest(
-      url: Urls.registration,
-      body: requestBody,
+    final bool result = await signUpController.signUp(
+      _emailTEController.text.trim(),
+      _firstNameTEController.text.trim(),
+      _lastNameTEController.text.trim(),
+      _mobileTEController.text.trim(),
+      _passwordTEController.text,
     );
-    _inProgress = false;
-    setState(() {});
-    if (response.isSuccess) {
+    if (result) {
       if (!mounted) return;
-      _submitted = false;
       _formKey.currentState!.reset();
       _clearTextFields();
       showSnackBarMessage(context, 'New user created');
+      Get.offNamed(SignInScreen.name);
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      showSnackBarMessage(context, signUpController.errorMessage!, true);
     }
   }
 
@@ -222,7 +214,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _onTapGoToSignIn() {
-    Navigator.pop(context);
+    Get.back();
   }
 
   @override

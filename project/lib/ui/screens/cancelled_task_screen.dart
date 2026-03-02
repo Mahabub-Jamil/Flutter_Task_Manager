@@ -9,7 +9,7 @@ import 'package:project/ui/widgets/snack_bar_message.dart';
 
 class CancelledTaskScreen extends StatefulWidget {
   const CancelledTaskScreen({super.key});
-
+  static const String name = '/cancelledTaskScreen';
   @override
   State<CancelledTaskScreen> createState() => _CancelledTaskScreenState();
 }

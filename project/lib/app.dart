@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project/controller_binder.dart';
+import 'package:project/ui/screens/add_new_task_screen.dart';
+import 'package:project/ui/screens/cancelled_task_screen.dart';
+import 'package:project/ui/screens/completed_task_screen.dart';
+import 'package:project/ui/screens/forgot_password_email_screen.dart';
+import 'package:project/ui/screens/forgot_password_pin_verify_screen.dart';
+import 'package:project/ui/screens/forgot_password_set_password_screenn.dart';
 import 'package:project/ui/screens/main__bottom_nav_bar_screen.dart';
+import 'package:project/ui/screens/new_task_screen.dart';
+import 'package:project/ui/screens/profile_screen.dart';
+import 'package:project/ui/screens/progress_task_screen.dart';
+import 'package:project/ui/screens/sign_in_screen.dart';
+import 'package:project/ui/screens/sign_up_screen.dart';
 import 'package:project/ui/screens/splash_screen.dart';
 import 'package:project/ui/utils/app_colors.dart';
 
@@ -27,6 +38,20 @@ class TaskManagerApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         MainBottomNavBarScreen.name: (context) =>
             const MainBottomNavBarScreen(),
+        SignInScreen.name: (context) => const SignInScreen(),
+        SignUpScreen.name: (context) => const SignUpScreen(),
+        ProfileScreen.name: (context) => const ProfileScreen(),
+        AddNewTaskScreen.name: (context) => const AddNewTaskScreen(),
+        NewTaskScreen.name: (context) => const NewTaskScreen(),
+        CompletedTaskScreen.name: (context) => const CompletedTaskScreen(),
+        CancelledTaskScreen.name: (context) => const CancelledTaskScreen(),
+        ProgressTaskScreen.name: (context) => const ProgressTaskScreen(),
+        ForgotPasswordEmailScreen.name: (context) =>
+            const ForgotPasswordEmailScreen(),
+        ForgotPasswordPinVerifyScreen.name: (context) =>
+            const ForgotPasswordPinVerifyScreen(),
+        ForgotPasswordSetPasswordScreen.name: (context) =>
+            const ForgotPasswordSetPasswordScreen(),
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:project/Data/models/network_response.dart';
 import 'package:project/Data/services/network_caller.dart';
@@ -12,8 +13,8 @@ import 'package:project/ui/widgets/screen_background.dart';
 import 'package:project/ui/widgets/snack_bar_message.dart';
 
 class ForgotPasswordPinVerifyScreen extends StatefulWidget {
-  const ForgotPasswordPinVerifyScreen({super.key, required this.email});
-  final String email;
+  const ForgotPasswordPinVerifyScreen({super.key});
+  static const String name = '/forgotPasswordPinVerifyScreen';
   @override
   State<ForgotPasswordPinVerifyScreen> createState() =>
       _ForgotPasswordPinVerifyScreenState();
@@ -21,6 +22,7 @@ class ForgotPasswordPinVerifyScreen extends StatefulWidget {
 
 class _ForgotPasswordPinVerifyScreenState
     extends State<ForgotPasswordPinVerifyScreen> {
+  String get email => Get.arguments['email'];
   bool _inProgress = false;
   final TextEditingController _otpTEController = TextEditingController();
   @override
@@ -138,18 +140,15 @@ class _ForgotPasswordPinVerifyScreenState
     setState(() {});
     String otp = _otpTEController.text.trim();
     final NetworkResponse response = await NetworkCaller.getRequest(
-      url: Urls.RecoverVerifyOTP(widget.email, otp),
+      url: Urls.RecoverVerifyOTP(email, otp),
     );
     _inProgress = false;
     setState(() {});
     if (response.isSuccess) {
       showSnackBarMessage(context, "Email verification successfull");
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              ForgotPasswordSetPasswordScreen(email: widget.email, otp: otp),
-        ),
+      Get.toNamed(
+        ForgotPasswordSetPasswordScreen.name,
+        arguments: {'email': email, 'otp': otp},
       );
     } else {
       showSnackBarMessage(context, response.errorMessage, true);

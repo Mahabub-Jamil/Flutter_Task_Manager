@@ -14,7 +14,7 @@ import 'package:project/ui/widgets/task_manager_app_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
-
+  static const String name = '/profileScreen';
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }

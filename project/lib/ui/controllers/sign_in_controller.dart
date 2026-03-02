@@ -7,7 +7,7 @@ import 'package:project/ui/controllers/auth_controller.dart';
 
 class SignInController extends GetxController {
   bool _inProgress = false;
-  bool get inprogress => _inProgress;
+  bool get inProgress => _inProgress;
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 

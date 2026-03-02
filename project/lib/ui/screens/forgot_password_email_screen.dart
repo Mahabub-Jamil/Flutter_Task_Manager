@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' show Get, GetNavigation;
 import 'package:project/Data/models/network_response.dart';
 import 'package:project/Data/services/network_caller.dart';
 import 'package:project/Data/utils/urls.dart';
@@ -11,6 +12,7 @@ import 'package:project/ui/widgets/snack_bar_message.dart';
 
 class ForgotPasswordEmailScreen extends StatefulWidget {
   const ForgotPasswordEmailScreen({super.key});
+  static const String name = '/forgotPasswordEmailScreen';
   @override
   State<ForgotPasswordEmailScreen> createState() =>
       _ForgotPasswordEmailScreenState();
@@ -70,6 +72,7 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
               if (value?.isEmpty ?? true) {
                 return 'Enter Valid Email';
               }
+              return null;
             },
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(hintText: 'Email'),
@@ -134,13 +137,9 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
     setState(() {});
     if (response.isSuccess) {
       showSnackBarMessage(context, "6 digit pin will be sent soon");
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ForgotPasswordPinVerifyScreen(
-            email: _emailTEController.text.trim(),
-          ),
-        ),
+      Get.toNamed(
+        ForgotPasswordPinVerifyScreen.name,
+        arguments: {'email': _emailTEController.text.trim()},
       );
     } else {
       showSnackBarMessage(context, response.errorMessage, true);
